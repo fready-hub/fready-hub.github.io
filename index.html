@@ -1,11 +1,212 @@
 <!doctype html>
+<html lang="ko">
+<head>
 <meta charset="utf-8">
-<title>fready-hub</title>
-<style>body{font:16px/1.6 system-ui,sans-serif;max-width:40rem;margin:4rem auto;padding:0 1rem}</style>
-<h1>fready-hub</h1>
-<p>앱 개발자 페이지입니다. 앱별 개인정보처리방침은 각 앱 페이지에 있습니다.</p>
-<ul>
-  <li><a href="https://fready-hub.github.io/cocosaver-privacy/">코코세이버</a></li>
-  <li><a href="https://fready-hub.github.io/yetda-privacy/">옜다</a></li>
-  <li><a href="https://fready-hub.github.io/ikey-privacy/">아이키</a></li>
-</ul>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rapa.world — 라파의 세상</title>
+<meta name="description" content="코스트코 환불 알림 코코세이버, 기프티콘 유효기간 관리 옜다, 자녀 성장발달 기록 아이키 — 일상을 조금 더 편하게 만드는 앱들.">
+<link rel="canonical" href="https://rapa.world/">
+<meta property="og:title" content="rapa.world — 라파의 세상">
+<meta property="og:description" content="일상을 조금 더 편하게 만드는 앱들.">
+<meta property="og:url" content="https://rapa.world/">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf7; --bg-2: #ffffff; --fg: #1c1b19; --fg-2: #5c5a55; --line: #e6e4de;
+    --accent: #ff6b3d; --accent-2: #ffd166;
+    --radius: 20px; --shadow: 0 10px 30px rgba(28,27,25,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121212; --bg-2: #1c1c1e; --fg: #f2f1ed; --fg-2: #a7a59e; --line: #2b2b2e;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121212; --bg-2: #1c1c1e; --fg: #f2f1ed; --fg-2: #a7a59e; --line: #2b2b2e;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+    font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+  /* 헤더 */
+  header { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--line); }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: -.02em; font-size: 18px; }
+  .brand .dot { width: 12px; height: 12px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+  .nav a.link { color: var(--fg-2); font-size: 14px; margin-left: 18px; }
+  .nav a.link:hover { color: var(--fg); }
+
+  /* 히어로 */
+  .hero { padding: 72px 0 40px; position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; inset: -40% -20% auto; height: 70%; background:
+      radial-gradient(60% 60% at 20% 30%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
+      radial-gradient(50% 50% at 80% 20%, color-mix(in srgb, var(--accent-2) 24%, transparent), transparent 70%);
+    pointer-events: none; }
+  .hero h1 { font-size: clamp(32px, 5.5vw, 56px); line-height: 1.15; letter-spacing: -.03em; margin: 0 0 16px; font-weight: 900; }
+  .hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { font-size: clamp(16px, 2vw, 19px); color: var(--fg-2); max-width: 36em; margin: 0; }
+  .hero .meta { margin-top: 28px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg-2); color: var(--fg-2); }
+
+  /* 서비스 카드 */
+  section.services { padding: 24px 0 64px; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+  .card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow);
+    display: grid; grid-template-columns: 1fr 200px; grid-template-areas: "body shot"; gap: 14px 28px; position: relative; overflow: hidden; transition: transform .2s ease; }
+  .card .body { grid-area: body; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .card .shot { grid-area: shot; align-self: center; justify-self: end; width: 200px; aspect-ratio: 9/19.5; border-radius: 26px; overflow: hidden;
+    border: 6px solid color-mix(in srgb, var(--fg) 85%, var(--bg-2)); box-shadow: 0 18px 40px rgba(0,0,0,.25); background: #000; }
+  .card .shot img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+  .card .note { font-size: 12px; color: var(--fg-2); margin: 0; }
+  @media (max-width: 640px) { .card { grid-template-columns: 1fr; grid-template-areas: "body" "shot"; } .card .shot { justify-self: center; width: 180px; } }
+  .card:hover { transform: translateY(-3px); }
+  .card::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--c, var(--accent)); }
+  .card .head { display: flex; align-items: center; gap: 14px; }
+  .icon { width: 56px; height: 56px; border-radius: 16px; flex: none; overflow: hidden; background: color-mix(in srgb, var(--c, var(--accent)) 14%, var(--bg-2));
+    display: grid; place-items: center; font-weight: 900; font-size: 22px; color: var(--c, var(--accent)); }
+  .icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card h2 { margin: 0; font-size: 20px; letter-spacing: -.02em; }
+  .card .tag { margin: 2px 0 0; color: var(--fg-2); font-size: 14px; }
+  .card p.desc { margin: 0; color: var(--fg); font-size: 15px; }
+  .card ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; color: var(--fg-2); }
+  .card ul li::before { content: "✦"; color: var(--c, var(--accent)); margin-right: 8px; }
+  .status { display: flex; gap: 6px; flex-wrap: wrap; }
+  .status span { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--c, var(--accent)) 12%, var(--bg-2)); color: var(--c, var(--accent)); font-weight: 700; }
+  .status span.soon { background: var(--line); color: var(--fg-2); }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 6px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; font-size: 14px; font-weight: 700; border: 1px solid var(--line); background: var(--bg); }
+  .btn.primary { background: var(--c, var(--accent)); color: #fff; border-color: transparent; }
+  .btn:hover { filter: brightness(1.05); }
+  .btn svg { width: 16px; height: 16px; }
+
+  /* 푸터 */
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--fg-2); font-size: 14px; }
+  footer .row { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  footer a { color: var(--fg-2); text-decoration: underline; text-underline-offset: 3px; }
+  footer a:hover { color: var(--fg); }
+
+  @media (max-width: 480px) { .hero { padding: 48px 0 28px; } .card { padding: 20px; } }
+  @media (prefers-reduced-motion: reduce) { .card, html { transition: none; scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/"><span class="dot"></span>rapa.world</a>
+    <nav><a class="link" href="#services">서비스</a><a class="link" href="https://github.com/fready-hub" rel="noopener">GitHub</a></nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1>일상의 작은 불편을<br><em>앱 하나</em>로 덜어냅니다</h1>
+      <p>환불 받을 수 있는데 놓치는 돈, 잊고 지나가는 기프티콘, 아이의 성장 기록 — 혼자 만들고 직접 쓰는 앱들입니다.</p>
+      <div class="meta" id="hero-meta"></div>
+    </div>
+  </section>
+
+  <section class="services" id="services">
+    <div class="wrap">
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap row">
+    <div>© <span id="year"></span> rapa.world · 개인정보처리방침은 각 서비스 페이지에 있습니다.</div>
+    <div><a href="https://github.com/fready-hub" rel="noopener">github.com/fready-hub</a></div>
+  </div>
+</footer>
+
+<script>
+  // 서비스 데이터 — 각 프로젝트 세션 회신으로 채운다. 순서 = 출시 순.
+  const SERVICES = [
+    { id: "cocosaver", name: "코코세이버", tagline: "코스트코 영수증 관리 · 가격 인하 알림",
+      desc: "코스트코 코리아 회원을 위한 앱입니다. 영수증을 넣어 두면 산 물건이 더 싸졌을 때 알려 주고, 매장에서 차액 환불을 요청할 때 필요한 영수증을 바로 찾아 줍니다.",
+      features: ["산 물건이 싸지면 알림 — 돌려받을 수 있는 금액까지",
+                 "영수증 사진 등록(기기 안에서 글자 인식), 코스트코 계정에서 최근 6개월 영수증 가져오기",
+                 "품목 이름·상품번호로 영수증 검색, 환불 방법 안내"],
+      note: "코스트코와 무관한 독립 앱입니다. 환불 처리 여부와 방식은 매장이 정합니다.",
+      color: "#E8B10A", icon: "assets/cocosaver-icon.png", shot: "assets/cocosaver-shot.webp",
+      status: ["android", "ios"],
+      links: { play: "https://play.google.com/store/apps/details?id=world.rapa.cocosaver&referrer=utm_source%3Drapa_world%26utm_medium%3Dlanding",
+               appstore: "https://apps.apple.com/kr/app/id6815067248", site: "https://cocosaver.rapa.world/" } },
+
+    { id: "yetda", name: "옜다", tagline: "받은 기프티콘, 만료 전에 알려드려요",
+      desc: "카톡으로 받은 기프티콘과 종이 상품권을 한곳에 모으고, 유효기간이 다가오면 일주일 전·사흘 전·하루 전에 알려 줍니다. 공유하기나 앨범 스크린샷 한 장으로 등록하면 브랜드·금액·유효기간을 자동으로 읽습니다. 글자 인식은 휴대폰 안에서만 하고, 회원가입·로그인이 없습니다.",
+      features: ["사진 한 장 등록 — 카톡 공유·앨범에서 브랜드·금액·유효기간 자동 인식",
+                 "만료 알림 — 7일·3일·1일 전",
+                 "기기 안에만 보관 — 쿠폰 이미지는 암호화해 기기에만 두고 서버로 보내지 않음"],
+      color: "#252C7E", icon: "assets/yetda-icon.png", shot: "assets/yetda-shot.webp",
+      status: ["android"],
+      links: { play: "https://play.google.com/store/apps/details?id=world.rapa.yetda", site: "https://yetda.rapa.world/" } },
+
+    { id: "ikey", name: "아이키", tagline: "우리 아이 키·몸무게 백분위 기록",
+      desc: "질병관리청 소아·청소년 성장도표를 기준으로, 우리 아이의 키·몸무게가 또래 100명 중 몇 번째인지(백분위) 쉬운 말로 알려주는 성장 기록 앱입니다. 측정 기록을 쌓으면 또래 중간값과 함께 성장 그래프로 변화를 볼 수 있어요. 회원가입 없이 기록은 기기 안에만 저장됩니다.",
+      features: ["키·몸무게 백분위 — “또래 100명 중 약 62명이 더 작아요”처럼 쉬운 말로",
+                 "성장 그래프 — 또래 중간값(50백분위)과 함께",
+                 "여러 자녀 관리, 기록 백업(내보내기·가져오기)"],
+      note: "백분위는 참고용이며 진단을 대신하지 않습니다. 36개월 미만은 WHO, 이상은 2017 성장도표(질병관리청) 기준, 만 0~19세.",
+      color: "#46BD7B", icon: "assets/ikey-icon.png", shot: "assets/ikey-shot.webp",
+      status: ["android", "ios"],
+      links: { play: "https://play.google.com/store/apps/details?id=com.ikey.ikey",
+               appstore: "https://apps.apple.com/kr/app/id6818048443", site: "https://ikey.rapa.world/" } },
+
+    { id: "todak", name: "토닥", tagline: "회사에서 있었던 일, 익명으로 털어놓는 곳",
+      desc: "회사에서 겪은 일을 익명으로 털어놓으면, AI가 그 상황 속 행동 패턴을 유형 카드로 읽어드려요. 같은 일을 겪은 사람들과 공감을 나눌 수 있어요.",
+      features: ["익명 글쓰기 — 이름·회사명·연락처 자동 가림",
+                 "AI 행동 패턴 유형 카드(유형도감)",
+                 "공감 리액션·댓글"],
+      note: "재미와 위로를 위한 해석이며, 의학적·심리학적 진단이 아닙니다.",
+      color: "#f59e0b", icon: null, shot: null,
+      status: ["web", "beta"],
+      links: { web: "https://todak.rapa.world/" } },
+  ];
+  const STATUS_LABEL = { android: "Android", ios: "iOS", web: "웹", beta: "베타", soon: "준비 중" };
+  const ICONS = {
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 2.5v19l11-9.5L3 2.5zm13 7.6 3.4 2-3.4 2V10.1zM4.5 4.6l8.2 7.4-8.2 7.4V4.6z"/></svg>',
+    appstore: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.7c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.5-1.8 3.1-.5 7.7 1.3 10.3.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.2-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.8-1.1-2.8-4.2zM14 5.3c.7-.8 1.1-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4z"/></svg>',
+    site: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+  };
+  function card(s) {
+    const links = [];
+    if (s.links.play) links.push(`<a class="btn primary" href="${s.links.play}" rel="noopener">${ICONS.play}Google Play</a>`);
+    if (s.links.appstore) links.push(`<a class="btn primary" href="${s.links.appstore}" rel="noopener">${ICONS.appstore}App Store</a>`);
+    if (s.links.web) links.push(`<a class="btn primary" href="${s.links.web}" rel="noopener">${ICONS.site}바로 가기</a>`);
+    if (s.links.site) links.push(`<a class="btn" href="${s.links.site}" rel="noopener">${ICONS.site}소개 · 방침</a>`);
+    const icon = s.icon ? `<img src="${s.icon}" alt="${s.name} 아이콘" loading="lazy">` : s.name.slice(0,1);
+    const shot = s.shot ? `<div class="shot"><img src="${s.shot}" alt="${s.name} 화면" loading="lazy"></div>` : '';
+    const note = s.note ? `<p class="note">${s.note}</p>` : '';
+    return `<article class="card" style="--c:${s.color}">
+      <div class="body">
+        <div class="head"><div class="icon">${icon}</div><div><h2>${s.name}</h2><p class="tag">${s.tagline}</p></div></div>
+        <div class="status">${s.status.map(k => `<span class="${k==='soon'?'soon':''}">${STATUS_LABEL[k]||k}</span>`).join('')}</div>
+        <p class="desc">${s.desc}</p>
+        <ul>${s.features.map(f => `<li>${f}</li>`).join('')}</ul>
+        ${note}
+        <div class="actions">${links.join('')}</div>
+      </div>${shot}
+    </article>`;
+  }
+  document.getElementById('grid').innerHTML = SERVICES.map(card).join('');
+  const released = SERVICES.filter(s => !s.status.includes('soon')).length;
+  document.getElementById('hero-meta').innerHTML =
+    `<span class="chip">출시 서비스 ${released}개</span><span class="chip">안드로이드 · iOS · 웹</span><span class="chip">개인 개발</span>`;
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
