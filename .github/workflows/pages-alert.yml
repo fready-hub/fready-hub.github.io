@@ -26,7 +26,7 @@ jobs:
           echo "status=$STATUS"
           if [ "$STATUS" != "errored" ]; then echo "실패 아님 — 보내지 않음"; exit 0; fi
           TEXT=$(printf '🚨 *[rapa] GitHub Pages 빌드 실패*\n• 무엇: %s\n• 커밋: <https://github.com/%s/commit/%s|%s>\n• 어디서: <https://github.com/%s/settings/pages|Pages 설정> · 빌드 로그는 저장소 이메일 알림\n• 지금 할 일: 마지막 커밋의 HTML·파일명을 확인하고 다시 push\n_%s · <https://github.com/%s/actions|Actions>_' \
-            "$ERR" "$REPO" "$COMMIT" "${COMMIT:0:7}" "$REPO" "$(date -u +'%Y-%m-%d %H:%M UTC')" "$REPO")
+            "$ERR" "$REPO" "$COMMIT" "${COMMIT:0:7}" "$REPO" "$(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST')" "$REPO")
           RES=$(curl -s -H "Authorization: Bearer $SLACK_BOT_TOKEN" -H 'Content-Type: application/json; charset=utf-8' \
             -d "$(jq -n --arg c "$CHANNEL" --arg t "$TEXT" '{channel:$c,text:$t}')" https://slack.com/api/chat.postMessage)
           echo "$RES" | jq -e .ok >/dev/null || { echo "슬랙 전송 실패: $RES"; exit 1; }
