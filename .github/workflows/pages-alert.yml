@@ -1,0 +1,32 @@
+# GitHub Pages 빌드 실패를 슬랙 #rapa-에러 로 보낸다.
+# Pages 빌드 실패는 GitHub 이 이메일로만 알린다 — 공통 규칙 「운영 알림」(모든 에러는 슬랙으로).
+# 트리거 `page_build` 는 Pages 빌드 시도마다 발화하고, 페이로드에 build.status / build.error.message 가 들어 있다.
+# workflow_dispatch 의 simulate=errored 는 알림 경로만 시험한다(실제 빌드를 깨지 않고 "실패가 잡히는지" 를 본다).
+name: pages-alert
+on:
+  page_build:
+  workflow_dispatch:
+    inputs:
+      simulate:
+        description: "errored 를 넣으면 실패 알림을 시험 전송"
+        default: ""
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 실패면 슬랙으로
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          CHANNEL: C0C7X9G9L04
+          STATUS: ${{ github.event.build.status || inputs.simulate }}
+          ERR: ${{ github.event.build.error.message || '(시험 전송)' }}
+          COMMIT: ${{ github.event.build.commit || github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "status=$STATUS"
+          if [ "$STATUS" != "errored" ]; then echo "실패 아님 — 보내지 않음"; exit 0; fi
+          TEXT=$(printf '🚨 *[rapa] GitHub Pages 빌드 실패*\n• 무엇: %s\n• 커밋: <https://github.com/%s/commit/%s|%s>\n• 어디서: <https://github.com/%s/settings/pages|Pages 설정> · 빌드 로그는 저장소 이메일 알림\n• 지금 할 일: 마지막 커밋의 HTML·파일명을 확인하고 다시 push\n_%s · <https://github.com/%s/actions|Actions>_' \
+            "$ERR" "$REPO" "$COMMIT" "${COMMIT:0:7}" "$REPO" "$(date -u +'%Y-%m-%d %H:%M UTC')" "$REPO")
+          RES=$(curl -s -H "Authorization: Bearer $SLACK_BOT_TOKEN" -H 'Content-Type: application/json; charset=utf-8' \
+            -d "$(jq -n --arg c "$CHANNEL" --arg t "$TEXT" '{channel:$c,text:$t}')" https://slack.com/api/chat.postMessage)
+          echo "$RES" | jq -e .ok >/dev/null || { echo "슬랙 전송 실패: $RES"; exit 1; }
