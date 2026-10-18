@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://rapa.world/sitemap.xml
