@@ -186,6 +186,13 @@
       color: "#f59e0b", icon: null, shot: null,
       status: ["web", "beta", "appsoon"],
       links: { web: "https://todak.rapa.world/" } },
+
+    { id: "gugudan", name: "구구단 탐험대", tagline: "구구단의 원리를 손으로 배우는 학습 게임",
+      desc: "7~9세 아이가 구구단의 원리를 손으로 조작하며 배우는 학습 게임. 로그인·광고 없이 기기 안에서만 동작해요.",
+      features: [],
+      color: "#6b7280", icon: null, shot: null,
+      status: ["android", "ios", "soon"],
+      links: {} },
   ];
   const STATUS_LABEL = { android: "Android", ios: "iOS", web: "웹", beta: "베타", soon: "준비 중", appsoon: "앱 준비 중" };
   const ICONS = {
@@ -207,7 +214,7 @@
         <div class="head"><div class="icon">${icon}</div><div><h2>${s.name}</h2><p class="tag">${s.tagline}</p></div></div>
         <div class="status">${s.status.map(k => `<span class="${k==='soon'||k==='appsoon'?'soon':''}">${STATUS_LABEL[k]||k}</span>`).join('')}</div>
         <p class="desc">${s.desc}</p>
-        <ul>${s.features.map(f => `<li>${f}</li>`).join('')}</ul>
+        ${s.features.length ? `<ul>${s.features.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
         ${note}
         <div class="actions">${links.join('')}</div>
       </div>${shot}
