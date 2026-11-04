@@ -56,7 +56,7 @@ echo "점검 완료"
 
 | 어디서 나는 에러 | 무엇이 슬랙으로 보내는가 | 시험 |
 |---|---|---|
-| GitHub Pages 빌드 실패 | `.github/workflows/pages-alert.yml` (`page_build` 트리거, `errored` 일 때만) | `gh workflow run pages-alert.yml -f simulate=errored` → run 41081976888 success (2026-10-30). ⚠️ **슬랙 채널 도착은 사용자 육안 확인 대기** — 확인 전까지 「연결됨」 아님 |
+| GitHub Pages 빌드 실패 | `.github/workflows/pages-alert.yml` (`page_build` 트리거, `errored` 일 때만) | `gh workflow run pages-alert.yml -f simulate=errored` → run 41081976888 success (2026-10-30). **슬랙 도착 확인됨** — `#rapa-에러` 에 시험 메시지(커밋 f29c7de) 2026-10-31 00:34 KST 도착, 2026-11-04 슬랙 채널 직접 조회 → **연결됨** |
 | Actions 워크플로 실패 | 워크플로가 `pages-alert` 뿐이고 자체 실패 알림 없음 → **안 가는 것** (`SLACK_BOT_TOKEN` 만료·채널 변경 시 알림 스텝이 exit 1 로 실패하지만 그 실패는 알려지지 않는다) | — |
 | 크래시·서버·Functions·배치 | 해당 없음 — 서버·앱·배치가 없는 정적 페이지 | — |
 | 사이트 다운·인증서 만료 | 감시 없음 → **안 가는 것** (Pages 가 인증서를 자동 갱신하나 장애 알림은 없다) | — |
