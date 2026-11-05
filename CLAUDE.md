@@ -10,7 +10,7 @@
 
 ## 환경 제약
 - 빌드·패키지 없음. `index.html` 한 파일 + `assets/` + `CNAME`·`robots.txt`·`sitemap.xml`. Node·nvm 불필요.
-- `main` 에 push 하면 곧 `rapa.world` 에 배포된다(Pages). 그래서 작업 브랜치에서 확인 후 머지한다.
+- `main` 에 push 하면 곧 `rapa.world` 에 배포된다(Pages). 그래서 작업 브랜치에서 확인한 뒤 **사용자 승인을 받고** 머지·push 한다(기록용 커밋 예외도 적용되지 않는다).
 - `fready-hub.github.io` 는 `rapa.world` 로 301 리다이렉트된다. 외부에 등록하는 주소는 `rapa.world` 만 쓴다.
 - 서비스 카드를 추가·변경하면 스토어 링크가 200 인지 먼저 본다(아래 검증).
 
@@ -47,7 +47,7 @@ echo "점검 완료"
 
 | 세션 | 폴더 | 역할 |
 |---|---|---|
-| 관리 | `~/projects/rapa` | 카드 추가·수정, 배포(push), 이슈, 도메인·검색엔진 설정 |
+| 관리 | `~/projects/rapa` | 카드 추가·수정(main 병합·push 는 사용자 승인), 이슈, 도메인·검색엔진 설정 |
 
 현재 세션은 이것 하나뿐이다. 별도 세션이 필요한 일(맥 빌드·실기기)은 없다. 별도 세션이 필요하면 `/new-feature` 로 Paseo 에 띄운다.
 
