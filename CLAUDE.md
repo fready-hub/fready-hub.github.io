@@ -54,7 +54,7 @@ echo "점검 완료"
 - 서비스 카드의 스토어 링크·`referrer` utm 파라미터는 유입 측정에 쓰이므로 임의로 바꾸지 않는다.
 
 ## 세션 구성
-이 세션이 관리 세션이다. 작업은 경중에 따라 직접 / Paseo 프로필 에이전트(worktree workspace) 중 고른다. 역할명(dev·architect·reviewer·marketer 등)은 공통 CLAUDE.md 「에이전트 실행 규칙 — Paseo」 의 역할→프로필 매핑표를 따른다.
+이 세션이 관리 세션(Paseo `[rapa] 팀장`)이다. 설계는 이 세션이 직접 하고, 작업은 경중에 따라 직접 / Paseo 프로필 에이전트(worktree workspace) / 서브에이전트(scout·reviewer·proposal-reviewer·device-qa) 중 고른다. 역할(dev·scout·reviewer·device-qa·marketer 등)의 위임 수단은 공통 CLAUDE.md 「에이전트 실행 규칙 — Paseo」 의 매핑표를 따른다(architect·quick 은 호출하지 않는다).
 
 | 세션 | 폴더 | 역할 |
 |---|---|---|
@@ -64,6 +64,7 @@ echo "점검 완료"
 
 ### 에이전트 실행 규칙
 - 다른 에이전트에게 위임할 때는 Paseo 도구와 프로필을 사용한다.
+- 서브에이전트는 짧은 읽기 전용 조사(scout), 리뷰(reviewer·proposal-reviewer), 화면 QA(device-qa)에만 쓴다. 리뷰·QA 시작 전에 `git rev-parse HEAD` 를 적어 두고, 끝나면 HEAD 가 같은지와 `git status --porcelain` 이 비었는지 둘 다 확인한다.
 - tmux로 새 에이전트를 실행하지 않는다.
 - tmux는 개발 서버와 로그 확인 용도로만 사용한다.
 - 지정한 프로필이 없으면 임의로 대체하지 않고 알린다.
