@@ -1,8 +1,8 @@
 # rapa (rapa.world 루트)
 
 정적 랜딩 — 출시·준비 중·개발 중·기획 중 서비스를 한곳에 소개하는 허브(카드 목록은 `index.html` 의 `SERVICES`). 저장소 `fready-hub/fready-hub.github.io`(GitHub 사용자 사이트, 폴더명과 다름), Pages 소스 `main` `/`, 커스텀 도메인 `rapa.world`(`CNAME`).
-공통 CLAUDE.md 와 [docs/WORKFLOW.md](claude-common/docs/WORKFLOW.md) 를 따른다. 이 프로젝트의 예외:
-- **main push = Pages 배포** — 병합·push 는 사용자 승인이며 기록용 커밋도 예외 없음(환경 제약 참조).
+**이 저장소는 공개다** — 운영 규칙·인계 문서·내부 경로·승인 절차 세부를 두지 않는다. 필요한 규칙은 비공개 `claude-common` 의 공통 CLAUDE.md 와 `docs/WORKFLOW.md` 를 따른다. 이 프로젝트의 예외:
+- **main push = Pages 배포** — 작업 브랜치에서 확인한 뒤 올린다(환경 제약 참조).
 - **대장 없음** — 기능 로직이 없는 정적 랜딩이라 `T-` 대상이 없고 링크 검증으로 대신한다(「테스트 대장·QA」 참조).
 - **진행 문서 없음** — `git log` 가 기록이다(커밋 메시지에 줄 수·예외 변경을 적는다).
 - 그 외 예외 없음. 여기엔 rapa 고유 내용만 둔다.
@@ -14,7 +14,7 @@
 
 ## 환경 제약
 - 빌드·패키지 없음. `index.html` 한 파일 + `assets/` + `CNAME`·`robots.txt`·`sitemap.xml`. Node·nvm 불필요.
-- `main` 에 push 하면 곧 `rapa.world` 에 배포된다(Pages). 그래서 작업 브랜치에서 확인한 뒤 머지·push 한다(승인 규칙은 공통, 기록용 커밋도 예외 없음).
+- `main` 에 push 하면 곧 `rapa.world` 에 배포된다(Pages). 그래서 작업 브랜치에서 확인한 뒤 머지·push 한다.
 - `fready-hub.github.io` 는 `rapa.world` 로 301 리다이렉트된다. 외부에 등록하는 주소는 `rapa.world` 만 쓴다.
 - 서비스 카드를 추가·변경하면 스토어 링크가 200 인지 먼저 본다(아래 검증).
 - **Mac 로컬 DNS 는 새 서브도메인을 음성 캐시한다** — 방금 만든 `*.rapa.world` 가 로컬에서만 실패할 수 있다(카드세이버 링크에서 헛짚을 뻔했다). 판정은 공용 DNS 로 한다:
@@ -25,7 +25,7 @@
 ⚠️ **bash 로 돌린다**(`bash -euo pipefail -c '…'`). 맥 기본 셸 zsh 는 `$urls` 를 단어로 쪼개지 않아 전체가 URL 하나로 묶여 `000` 한 줄만 나온다(2026-11-06 실측).
 ```bash
 set -euo pipefail
-cd ~/projects/rapa
+# 저장소 루트에서 실행
 # 1) 로컬 서빙 후 열기 — 화면은 눈으로 확인(QA)
 python3 -m http.server 8080   # http://localhost:8080
 # 2) 외부 링크 전부 200 인지(0건이면 실패로 본다)
@@ -41,7 +41,7 @@ echo "점검 완료"
 
 ## 테스트 대장·QA
 - 대장 파일: 해당 없음(대장 없음 → 팀장별 ID 대역표도 없음) — 기능 로직이 없는 랜딩이라 `T-` 대상이 없다. 카드·링크 변경 시 위 검증으로 대신한다. 대장을 만들게 되면 머리말에 팀장별 ID 대역표(`QA-0xx` 식)를 둔다.
-- `QA-` 확인 수단: 브라우저(모바일 폭·데스크톱 폭에서 카드 배치, 스토어 버튼이 올바른 스토어로 가는지). 화면 QA 구간은 `device-qa` 에이전트에 넘긴다.
+- `QA-` 확인 수단: 브라우저(모바일 폭·데스크톱 폭에서 카드 배치, 스토어 버튼이 올바른 스토어로 가는지).
 - `SEC-`: 비밀값을 쓰지 않는 공개 정적 페이지(저장소 public). 변경 시 눈으로 볼 것은 **비밀값이 커밋에 들어갔는가** 하나다. DB·접근 제어·개인정보 로그·서버 의존성 없음(해당 없음).
 
 ## 카드 상태 갱신
@@ -53,25 +53,26 @@ echo "점검 완료"
 
 ## 건드리면 안 되는 경로
 - `CNAME` — 지우거나 바꾸면 `rapa.world` 연결이 끊긴다(Pages 가 도메인을 잃는다).
+- `_config.yml` — `CLAUDE.md` 등 내부 문서를 배포에서 뺀다(2026-11-07, `https://rapa.world/CLAUDE.md` 공개 문제). 지우면 다시 공개된다.
 - `.github/workflows/pages-alert.yml` — Pages 실패 알림 경로. 채널 ID·시크릿 이름을 바꾸면 알림이 조용히 끊긴다.
 - `robots.txt`·`sitemap.xml` — 검색엔진 등록(네이버 소유 확인 메타 포함)에 쓰인다. 호스트는 `rapa.world` 유지.
 - 서비스 카드의 스토어 링크·`referrer` utm 파라미터는 유입 측정에 쓰이므로 임의로 바꾸지 않는다.
 
 ## 세션 구성
-상시 관리 세션은 없다. 접수가 연 **작업 단위 팀장 세션** `[rapa] 팀장` 이 경중에 따라 직접 / Paseo 프로필 에이전트 / 별도 세션 중 고른다. 원본 폴더(`~/projects/rapa`)에서 브랜치를 바꾸지 않고 수정은 worktree 에서 한다.
+상시 관리 세션은 없다. 작업 단위 팀장 세션 `[rapa] 팀장` 이 맡고, 수정은 작업 브랜치에서 한다. 세션 운영은 `claude-common` 을 따른다.
 
 | 세션 | 폴더 | 역할 |
 |---|---|---|
-| 팀장(작업 단위) | `~/projects/rapa` 의 worktree | 카드 추가·수정, 이슈, 도메인·검색엔진 설정 |
+| 팀장(작업 단위) | 이 저장소(작업 브랜치) | 카드 추가·수정, 이슈, 도메인·검색엔진 설정 |
 
-별도 세션이 필요한 일(맥 빌드·실기기)은 없다. 필요하면 `/new-feature` 로 Paseo 에 띄운다. 위임 규칙은 공통을 따른다.
+별도 세션이 필요한 일(맥 빌드·실기기)은 없다.
 
 ## 에러 알림 경로
-모든 에러는 슬랙 `#rapa-에러` 로 간다(채널 ID `C0C7X9G9L04`, 양식·현황은 `claude-common/docs/SLACK.md`).
+모든 에러는 슬랙 `#rapa-에러` 로 간다(양식·현황은 `claude-common`).
 
 | 어디서 나는 에러 | 무엇이 슬랙으로 보내는가 | 시험 |
 |---|---|---|
-| GitHub Pages 빌드 실패 | `.github/workflows/pages-alert.yml` (`page_build` 트리거, `errored` 일 때만) | `gh workflow run pages-alert.yml -f simulate=errored` → run 41081976888 success (2026-10-30). **슬랙 도착 확인됨** — `#rapa-에러` 에 시험 메시지(커밋 f29c7de) 2026-10-31 00:34 KST 도착, 2026-11-04 슬랙 채널 직접 조회 → **연결됨** |
+| GitHub Pages 빌드 실패 | `.github/workflows/pages-alert.yml` (`page_build` 트리거, `errored` 일 때만) | `gh workflow run pages-alert.yml -f simulate=errored` → **연결됨**(2026-10-31 도착 확인) |
 | Actions 워크플로 실패 | 워크플로가 `pages-alert` 뿐이고 자체 실패 알림 없음 → **안 가는 것** (`SLACK_BOT_TOKEN` 만료·채널 변경 시 알림 스텝이 exit 1 로 실패하지만 그 실패는 알려지지 않는다) | — |
 | 크래시·서버·Functions·배치 | 해당 없음 — 서버·앱·배치가 없는 정적 페이지 | — |
 | 사이트 다운·인증서 만료 | 감시 없음 → **안 가는 것** (Pages 가 인증서를 자동 갱신하나 장애 알림은 없다) | — |
