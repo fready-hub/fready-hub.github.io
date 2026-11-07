@@ -1,7 +1,11 @@
 # rapa (rapa.world 루트)
 
 정적 랜딩 — 출시·준비 중·개발 중·기획 중 서비스를 한곳에 소개하는 허브(카드 목록은 `index.html` 의 `SERVICES`). 저장소 `fready-hub/fready-hub.github.io`(GitHub 사용자 사이트, 폴더명과 다름), Pages 소스 `main` `/`, 커스텀 도메인 `rapa.world`(`CNAME`).
-공통 규칙은 `~/projects/CLAUDE.md` 에서 자동 로드된다. 여기엔 rapa 고유 내용만 둔다. 진행 문서는 따로 없고 `git log` 가 기록이다.
+공통 CLAUDE.md 와 [docs/WORKFLOW.md](claude-common/docs/WORKFLOW.md) 를 따른다. 이 프로젝트의 예외:
+- **main push = Pages 배포** — 병합·push 는 사용자 승인이며 기록용 커밋도 예외 없음(환경 제약 참조).
+- **대장 없음** — 기능 로직이 없는 정적 랜딩이라 `T-` 대상이 없고 링크 검증으로 대신한다(「테스트 대장·QA」 참조).
+- **진행 문서 없음** — `git log` 가 기록이다(커밋 메시지에 줄 수·예외 변경을 적는다).
+- 그 외 예외 없음. 여기엔 rapa 고유 내용만 둔다.
 
 ## 새 세션 진입 순서
 1. `git fetch --prune` 후 미머지 브랜치 확인(공통 「브랜치·배포 일원화」 1번의 `git cherry` 스크립트). 기본 브랜치는 `main`, 원격에 옛 `master` 가 남아 있다(Pages 소스 아님).
@@ -10,7 +14,7 @@
 
 ## 환경 제약
 - 빌드·패키지 없음. `index.html` 한 파일 + `assets/` + `CNAME`·`robots.txt`·`sitemap.xml`. Node·nvm 불필요.
-- `main` 에 push 하면 곧 `rapa.world` 에 배포된다(Pages). 그래서 작업 브랜치에서 확인한 뒤 **사용자 승인을 받고** 머지·push 한다(기록용 커밋 예외도 적용되지 않는다).
+- `main` 에 push 하면 곧 `rapa.world` 에 배포된다(Pages). 그래서 작업 브랜치에서 확인한 뒤 머지·push 한다(승인 규칙은 공통, 기록용 커밋도 예외 없음).
 - `fready-hub.github.io` 는 `rapa.world` 로 301 리다이렉트된다. 외부에 등록하는 주소는 `rapa.world` 만 쓴다.
 - 서비스 카드를 추가·변경하면 스토어 링크가 200 인지 먼저 본다(아래 검증).
 - **Mac 로컬 DNS 는 새 서브도메인을 음성 캐시한다** — 방금 만든 `*.rapa.world` 가 로컬에서만 실패할 수 있다(카드세이버 링크에서 헛짚을 뻔했다). 판정은 공용 DNS 로 한다:
@@ -36,7 +40,7 @@ echo "점검 완료"
 단위 테스트·타입체크·빌드는 해당 없음 — 컴파일 대상이 없는 정적 HTML.
 
 ## 테스트 대장·QA
-- 대장 파일: 해당 없음 — 기능 로직이 없는 랜딩이라 `T-` 대상이 없다. 카드·링크 변경 시 위 검증으로 대신한다.
+- 대장 파일: 해당 없음(대장 없음 → 팀장별 ID 대역표도 없음) — 기능 로직이 없는 랜딩이라 `T-` 대상이 없다. 카드·링크 변경 시 위 검증으로 대신한다. 대장을 만들게 되면 머리말에 팀장별 ID 대역표(`QA-0xx` 식)를 둔다.
 - `QA-` 확인 수단: 브라우저(모바일 폭·데스크톱 폭에서 카드 배치, 스토어 버튼이 올바른 스토어로 가는지). 화면 QA 구간은 `device-qa` 에이전트에 넘긴다.
 - `SEC-`: 비밀값을 쓰지 않는 공개 정적 페이지(저장소 public). 변경 시 눈으로 볼 것은 **비밀값이 커밋에 들어갔는가** 하나다. DB·접근 제어·개인정보 로그·서버 의존성 없음(해당 없음).
 
@@ -54,21 +58,13 @@ echo "점검 완료"
 - 서비스 카드의 스토어 링크·`referrer` utm 파라미터는 유입 측정에 쓰이므로 임의로 바꾸지 않는다.
 
 ## 세션 구성
-이 세션이 관리 세션(Paseo `[rapa] 팀장`)이다. 설계는 이 세션이 직접 하고, 작업은 경중에 따라 직접 / Paseo 프로필 에이전트(worktree workspace) / 서브에이전트(scout·reviewer·proposal-reviewer·device-qa) 중 고른다. 역할(dev·scout·reviewer·device-qa·marketer 등)의 위임 수단은 공통 CLAUDE.md 「에이전트 실행 규칙 — Paseo」 의 매핑표를 따른다(architect·quick 은 호출하지 않는다).
+상시 관리 세션은 없다. 접수가 연 **작업 단위 팀장 세션** `[rapa] 팀장` 이 경중에 따라 직접 / Paseo 프로필 에이전트 / 별도 세션 중 고른다. 원본 폴더(`~/projects/rapa`)에서 브랜치를 바꾸지 않고 수정은 worktree 에서 한다.
 
 | 세션 | 폴더 | 역할 |
 |---|---|---|
-| 관리 | `~/projects/rapa` | 카드 추가·수정(main 병합·push 는 사용자 승인), 이슈, 도메인·검색엔진 설정 |
+| 팀장(작업 단위) | `~/projects/rapa` 의 worktree | 카드 추가·수정, 이슈, 도메인·검색엔진 설정 |
 
-현재 세션은 이것 하나뿐이다. 별도 세션이 필요한 일(맥 빌드·실기기)은 없다. 별도 세션이 필요하면 `/new-feature` 로 Paseo 에 띄운다.
-
-### 에이전트 실행 규칙
-- 다른 에이전트에게 위임할 때는 Paseo 도구와 프로필을 사용한다.
-- 서브에이전트는 짧은 읽기 전용 조사(scout), 리뷰(reviewer·proposal-reviewer), 화면 QA(device-qa)에만 쓴다. 리뷰·QA 시작 전에 `git rev-parse HEAD` 를 적어 두고, 끝나면 HEAD 가 같은지와 `git status --porcelain` 이 비었는지 둘 다 확인한다.
-- tmux로 새 에이전트를 실행하지 않는다.
-- tmux는 개발 서버와 로그 확인 용도로만 사용한다.
-- 지정한 프로필이 없으면 임의로 대체하지 않고 알린다.
-- main 병합, push, 배포는 사용자 승인을 받는다.
+별도 세션이 필요한 일(맥 빌드·실기기)은 없다. 필요하면 `/new-feature` 로 Paseo 에 띄운다. 위임 규칙은 공통을 따른다.
 
 ## 에러 알림 경로
 모든 에러는 슬랙 `#rapa-에러` 로 간다(채널 ID `C0C7X9G9L04`, 양식·현황은 `claude-common/docs/SLACK.md`).
