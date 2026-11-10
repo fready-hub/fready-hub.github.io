@@ -2,7 +2,7 @@
 
 정적 랜딩 — 출시·준비 중·개발 중·기획 중 서비스를 한곳에 소개하는 허브(카드 목록은 `index.html` 의 `SERVICES`). 저장소 `fready-hub/fready-hub.github.io`(GitHub 사용자 사이트, 폴더명과 다름), Pages 소스 `main` `/`, 커스텀 도메인 `rapa.world`(`CNAME`).
 
-**이 저장소는 공개다** — 운영 규칙·인계 문서·내부 경로·승인 절차 세부를 두지 않는다. 공통 CLAUDE.md 를 따른다. 시작할 때 읽는 것은 이 파일과 docs/STATE.md 뿐.
+**이 저장소는 공개다** — 운영 규칙·내부 경로·승인 절차 세부를 두지 않는다. 공통 CLAUDE.md 를 따른다. 시작할 때 읽는 것은 이 파일과 docs/STATE.md 뿐.
 
 ## 규칙 요약
 - **main push = Pages 배포(곧 `rapa.world`)** — 작업 브랜치에서 확인한 뒤 머지·push. 원격에 옛 `master` 가 남아 있다(Pages 소스 아님).
