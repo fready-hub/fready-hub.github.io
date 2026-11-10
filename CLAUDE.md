@@ -1,86 +1,35 @@
 # rapa (rapa.world 루트)
 
 정적 랜딩 — 출시·준비 중·개발 중·기획 중 서비스를 한곳에 소개하는 허브(카드 목록은 `index.html` 의 `SERVICES`). 저장소 `fready-hub/fready-hub.github.io`(GitHub 사용자 사이트, 폴더명과 다름), Pages 소스 `main` `/`, 커스텀 도메인 `rapa.world`(`CNAME`).
-**이 저장소는 공개다** — 운영 규칙·인계 문서·내부 경로·승인 절차 세부를 두지 않는다. 필요한 규칙은 비공개 `claude-common` 의 공통 CLAUDE.md 와 `docs/WORKFLOW.md` 를 따른다. 이 프로젝트의 예외:
-- **main push = Pages 배포** — 작업 브랜치에서 확인한 뒤 올린다(환경 제약 참조).
-- **대장 없음** — 기능 로직이 없는 정적 랜딩이라 `T-` 대상이 없고 링크 검증으로 대신한다(「테스트 대장·QA」 참조).
-- **진행 문서 없음** — `git log` 가 기록이다(커밋 메시지에 줄 수·예외 변경을 적는다).
-- 그 외 예외 없음. 여기엔 rapa 고유 내용만 둔다.
 
-## 새 세션 진입 순서
-1. `git fetch --prune` 후 미머지 브랜치 확인(공통 「브랜치·배포 일원화」 1번의 `git cherry` 스크립트). 기본 브랜치는 `main`, 원격에 옛 `master` 가 남아 있다(Pages 소스 아님).
-2. `index.html` 의 `SERVICES` 배열(서비스 카드·스토어 링크)과 `git log --oneline -10` 을 본다.
-3. `gh issue list` 로 열린 이슈 확인.
+**이 저장소는 공개다** — 운영 규칙·인계 문서·내부 경로·승인 절차 세부를 두지 않는다. 공통 CLAUDE.md 를 따른다. 시작할 때 읽는 것은 이 파일과 docs/STATE.md 뿐.
 
-## 환경 제약
-- 빌드·패키지 없음. `index.html` 한 파일 + `assets/` + `CNAME`·`robots.txt`·`sitemap.xml`. Node·nvm 불필요.
-- `main` 에 push 하면 곧 `rapa.world` 에 배포된다(Pages). 그래서 작업 브랜치에서 확인한 뒤 머지·push 한다.
-- `fready-hub.github.io` 는 `rapa.world` 로 301 리다이렉트된다. 외부에 등록하는 주소는 `rapa.world` 만 쓴다.
-- 서비스 카드를 추가·변경하면 스토어 링크가 200 인지 먼저 본다(아래 검증).
-- **Mac 로컬 DNS 는 새 서브도메인을 음성 캐시한다** — 방금 만든 `*.rapa.world` 가 로컬에서만 실패할 수 있다(카드세이버 링크에서 헛짚을 뻔했다). 판정은 공용 DNS 로 한다:
-  `ip=$(dig +short @8.8.8.8 <host> A | tail -1)` → `curl -s -o /dev/null -w '%{http_code}\n' --resolve <host>:443:$ip https://<host>/`
-- **카톡 미리보기는 카카오 캐시다** — `og:image`·제목을 바꿔 배포해도 바로 안 바뀐다. 초기화는 사용자가 https://developers.kakao.com/tool/debugger/sharing 에 로그인해 `https://rapa.world/` 를 넣고 캐시 초기화한다(배포 뒤 「변한 게 없다」 는 대개 이것).
+## 규칙 요약
+- **main push = Pages 배포(곧 `rapa.world`)** — 작업 브랜치에서 확인한 뒤 머지·push. 원격에 옛 `master` 가 남아 있다(Pages 소스 아님).
+- 빌드·패키지 없음(`index.html` + `assets/`). 대장 없음 — 링크 검증으로 대신. 진행 문서 없음 — `git log` 가 기록.
+- 외부에 등록하는 주소는 `rapa.world` 만(`fready-hub.github.io` 는 301).
+- 서비스 카드를 바꾸면 스토어 링크 200 을 먼저 본다. 카드 상태 기준·순서 규칙은 [.claude/rules/cards.md](.claude/rules/cards.md) — 사용자가 정한 표시가 기준보다 우선하고, 통보 없이 바꾸지 않는다.
 
-## 검증 명령
-⚠️ **bash 로 돌린다**(`bash -euo pipefail -c '…'`). 맥 기본 셸 zsh 는 `$urls` 를 단어로 쪼개지 않아 전체가 URL 하나로 묶여 `000` 한 줄만 나온다(2026-11-06 실측).
+## 검증
+⚠️ **bash 로 돌린다**(`bash -euo pipefail -c '…'`). 맥 기본 zsh 는 `$urls` 를 단어로 쪼개지 않아 `000` 한 줄만 나온다.
 ```bash
-set -euo pipefail
-# 저장소 루트에서 실행
-# 1) 로컬 서빙 후 열기 — 화면은 눈으로 확인(QA)
-python3 -m http.server 8080   # http://localhost:8080
-# 2) 외부 링크 전부 200 인지(0건이면 실패로 본다)
-urls=$(grep -oE "https://[^\"' <)\`]+" index.html | grep -v -E 'fonts\.|\$\{' | sort -u)
-test -n "$urls"
+urls=$(grep -oE "https://[^\"' <)\`]+" index.html | grep -v -E 'fonts\.|\$\{' | sort -u); test -n "$urls"
 for u in $urls; do echo "$u $(curl -s -L -o /dev/null -w '%{http_code}' --max-time 15 "$u")"; done
-# 3) 배포 상태
 curl -s -o /dev/null -w '%{http_code} %{ssl_verify_result}\n' https://rapa.world/   # 200 0
-gh api repos/fready-hub/fready-hub.github.io/pages --jq '{status,cname,https_enforced}'
-echo "점검 완료"
 ```
-단위 테스트·타입체크·빌드는 해당 없음 — 컴파일 대상이 없는 정적 HTML.
-
-## 테스트 대장·QA
-- 대장 파일: 해당 없음(대장 없음 → 팀장별 ID 대역표도 없음) — 기능 로직이 없는 랜딩이라 `T-` 대상이 없다. 카드·링크 변경 시 위 검증으로 대신한다. 대장을 만들게 되면 머리말에 팀장별 ID 대역표(`QA-0xx` 식)를 둔다.
-- `QA-` 확인 수단: 브라우저(모바일 폭·데스크톱 폭에서 카드 배치, 스토어 버튼이 올바른 스토어로 가는지).
-- `SEC-`: 비밀값을 쓰지 않는 공개 정적 페이지(저장소 public). 변경 시 눈으로 볼 것은 **비밀값이 커밋에 들어갔는가** 하나다. DB·접근 제어·개인정보 로그·서버 의존성 없음(해당 없음).
-
-## 카드 상태 갱신
-`SERVICES` 의 `status` 값(`STATUS_LABEL`): `soon` 출시 준비 중 · `dev` 개발 중 · `plan` 기획 중 · 이 셋이 없으면 출시.
-- **기준**: 스토어 심사 제출까지는 `soon`, 스토어 공개(링크 200)가 확인되면 출시로 바꾸고 `play`·`appstore` 링크를 단다.
-- ⚠️ **사용자가 따로 정한 표시가 기준보다 우선한다.** 옜다는 Play 에 공개돼 있지만 기능·디자인 수정이 많아 `dev` 로 둔다(2026-11 사용자 결정) — 기준만 보고 출시로 바꾸지 않는다. 바꾸려면 사용자에게 묻는다.
-- **트리거**: 각 앱 관리 세션의 통보(출시·상태 변경). 통보 없이 바꾸지 않는다. 갱신 전에 새 스토어 링크가 200 인지 위 검증으로 본다.
-- 카드 순서는 사용자 결정이다(아이키·코코세이버·아이타임·구구단·토닥·옜다·카드세이버). 새 카드의 자리는 묻는다.
+전체 블록·로컬 서빙·Pages 상태는 [docs/RELEASE.md](docs/RELEASE.md). 새 서브도메인이 로컬에서만 실패하면 Mac DNS 음성 캐시 — 공용 DNS 로 판정(cards.md). 타입체크·빌드 없음.
 
 ## 건드리면 안 되는 경로
-- `CNAME` — 지우거나 바꾸면 `rapa.world` 연결이 끊긴다(Pages 가 도메인을 잃는다).
+- `CNAME` — 지우거나 바꾸면 `rapa.world` 연결이 끊긴다.
 - `_config.yml` — `CLAUDE.md` 등 내부 문서를 배포에서 뺀다(2026-11-07, `https://rapa.world/CLAUDE.md` 공개 문제). 지우면 다시 공개된다.
-- `.github/workflows/pages-alert.yml` — Pages 실패 알림 경로. 채널 ID·시크릿 이름을 바꾸면 알림이 조용히 끊긴다.
-- `robots.txt`·`sitemap.xml` — 검색엔진 등록(네이버 소유 확인 메타 포함)에 쓰인다. 호스트는 `rapa.world` 유지.
-- 서비스 카드의 스토어 링크·`referrer` utm 파라미터는 유입 측정에 쓰이므로 임의로 바꾸지 않는다.
+- `.github/workflows/pages-alert.yml` — Pages 실패 알림. 채널 ID·시크릿 이름을 바꾸면 알림이 조용히 끊긴다.
+- `robots.txt`·`sitemap.xml` — 검색엔진 등록(네이버 소유 확인 메타 포함). 호스트는 `rapa.world` 유지.
+- 서비스 카드의 스토어 링크·`referrer` utm 파라미터 — 유입 측정용, 임의 변경 금지.
 
-## 세션 구성
-상시 관리 세션은 없다. 작업 단위 팀장 세션 `[rapa] 팀장` 이 맡고, 수정은 작업 브랜치에서 한다. 세션 운영은 `claude-common` 을 따른다.
-
-| 세션 | 폴더 | 역할 |
-|---|---|---|
-| 팀장(작업 단위) | 이 저장소(작업 브랜치) | 카드 추가·수정, 이슈, 도메인·검색엔진 설정 |
-
-별도 세션이 필요한 일(맥 빌드·실기기)은 없다.
-
-## 에러 알림 경로
-모든 에러는 슬랙 `#rapa-에러` 로 간다(양식·현황은 `claude-common`).
-
-| 어디서 나는 에러 | 무엇이 슬랙으로 보내는가 | 시험 |
-|---|---|---|
-| GitHub Pages 빌드 실패 | `.github/workflows/pages-alert.yml` (`page_build` 트리거, `errored` 일 때만) | `gh workflow run pages-alert.yml -f simulate=errored` → **연결됨**(2026-10-31 도착 확인) |
-| Actions 워크플로 실패 | 워크플로가 `pages-alert` 뿐이고 자체 실패 알림 없음 → **안 가는 것** (`SLACK_BOT_TOKEN` 만료·채널 변경 시 알림 스텝이 exit 1 로 실패하지만 그 실패는 알려지지 않는다) | — |
-| 크래시·서버·Functions·배치 | 해당 없음 — 서버·앱·배치가 없는 정적 페이지 | — |
-| 사이트 다운·인증서 만료 | 감시 없음 → **안 가는 것** (Pages 가 인증서를 자동 갱신하나 장애 알림은 없다) | — |
-
-### 비용 출처 (`#rapa-마케팅수익`)
-| 출처 | 상태 |
+## 문서 지도
+| 문서 | 내용 |
 |---|---|
-| GitHub Pages | 무료(public 저장소, GitHub Free 의 Pages)·확인일 2026-10-31. 대역폭 소프트 한도 월 100GB |
-| Actions (`pages-alert`) | 무료(public 저장소는 Actions 분 무제한)·확인일 2026-10-31 |
-| `rapa.world` 도메인 갱신 | 계정 단위 비용 — 프로젝트에 못 붙으므로 루트 `#rapa-마케팅수익` 에서 관리. 갱신일은 이 문서에 없음(미확인) |
-| Google Fonts | 무료 |
+| [docs/STATE.md](docs/STATE.md) | 현재 상태 |
+| [docs/RELEASE.md](docs/RELEASE.md) | 배포·검증 전체 |
+| [docs/OPS.md](docs/OPS.md) | 에러·비용 알림 경로 |
+| [.claude/rules/cards.md](.claude/rules/cards.md) | 카드 상태 갱신 기준(index.html 을 건드릴 때) |

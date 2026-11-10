@@ -1,0 +1,14 @@
+{
+  "verify": "git diff --check origin/main...HEAD && echo '검증 완료 1건'",
+  "base": "main",
+  "protected": [
+    "CNAME",
+    "_config.yml",
+    ".github/workflows/*",
+    "robots.txt",
+    "sitemap.xml",
+    ".claude/*"
+  ],
+  "copy": [],
+  "auto_merge": false
+}
