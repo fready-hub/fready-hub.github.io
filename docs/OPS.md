@@ -5,7 +5,7 @@
 | 어디서 나는 에러 | 무엇이 슬랙으로 보내는가 | 시험 |
 |---|---|---|
 | GitHub Pages 빌드 실패 | `.github/workflows/pages-alert.yml` (`page_build` 트리거, `errored` 일 때만) | `gh workflow run pages-alert.yml -f simulate=errored` → **연결됨**(2026-10-31 도착 확인) |
-| Actions 워크플로 실패 | 워크플로가 `pages-alert` 뿐이고 자체 실패 알림 없음 → **안 가는 것** (`SLACK_BOT_TOKEN` 만료·채널 변경 시 알림 스텝이 exit 1 로 실패하지만 그 실패는 알려지지 않는다) | — |
+| Actions 워크플로 실패 | `.github/workflows/workflow-fail-alert.yml` (`workflow_run` 으로 `pages-alert` 실패 감시 → 슬랙). 슬랙 전송까지 실패하면(토큰 만료·채널 변경) 같은 경로라 못 가므로 저장소 이슈를 열어 GitHub 알림으로 남긴다. 워크플로를 추가하면 감시 목록에 이름을 더한다 | `gh workflow run workflow-fail-alert.yml -f simulate=failure` → **main 병합 후 도착 확인 전까지 미연결** (`workflow_run` 은 기본 브랜치 파일만 발화) |
 | 크래시·서버·Functions·배치 | 해당 없음 — 서버·앱·배치가 없는 정적 페이지 | — |
 | 사이트 다운·인증서 만료 | 감시 없음 → **안 가는 것** (Pages 가 인증서를 자동 갱신하나 장애 알림은 없다) | — |
 
