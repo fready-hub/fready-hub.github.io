@@ -1,0 +1,45 @@
+# 저장소 워크플로 자체의 실패(예: pages-alert 의 슬랙 전송 스텝 exit 1)를 슬랙 #rapa-에러 로 보낸다.
+# pages-alert 는 Pages 실패만 알리므로 자기 실패는 GitHub 기본 메일뿐이었다(이슈 #9).
+# 슬랙 전송까지 실패하면(토큰 만료·채널 변경) 같은 경로라 못 간다 — 그때는 이슈를 열어 GitHub 알림으로 남긴다.
+# 이 워크플로 자신은 감시 대상에 넣지 않는다(무한 반복 방지). 새 워크플로를 추가하면 workflows 목록에 이름을 더한다.
+# 시험: workflow_dispatch 의 simulate=failure 는 워크플로를 깨지 않고 알림 경로만 시험한다.
+name: workflow-fail-alert
+on:
+  workflow_run:
+    workflows: [pages-alert]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      simulate:
+        description: "failure 를 넣으면 실패 알림을 시험 전송"
+        default: ""
+permissions:
+  contents: read
+  issues: write
+jobs:
+  notify:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.conclusion == 'timed_out'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 실패면 슬랙으로, 슬랙도 안 되면 이슈로
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          CHANNEL: C0C7X9G9L04
+          SIM: ${{ inputs.simulate }}
+          WF_NAME: ${{ github.event.workflow_run.name || 'pages-alert (시험)' }}
+          WF_URL: ${{ github.event.workflow_run.html_url || format('{0}/{1}/actions', github.server_url, github.repository) }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion || inputs.simulate }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ "$SIM" != "failure" ]; then echo "시험 아님 — 보내지 않음"; exit 0; fi
+          NOW=$(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST')
+          TEXT=$(printf '🚨 *[rapa] Actions 워크플로 실패*\n• 무엇: %s 가 %s\n• 어디서: <%s|실행 로그>\n• 지금 할 일: 로그를 열어 실패 스텝 확인 — 슬랙 전송 스텝이면 SLACK_BOT_TOKEN·채널 ID 점검\n_%s · <https://github.com/%s/actions|Actions>_' \
+            "$WF_NAME" "$CONCLUSION" "$WF_URL" "$NOW" "$REPO")
+          RES=$(curl -s -H "Authorization: Bearer ${SLACK_BOT_TOKEN:-}" -H 'Content-Type: application/json; charset=utf-8' \
+            -d "$(jq -n --arg c "$CHANNEL" --arg t "$TEXT" '{channel:$c,text:$t}')" https://slack.com/api/chat.postMessage || true)
+          if echo "$RES" | jq -e .ok >/dev/null 2>&1; then echo "슬랙 전송 완료"; exit 0; fi
+          echo "슬랙 전송 실패: $(echo "$RES" | jq -r '.error // "응답 없음"' 2>/dev/null)"
+          gh issue create --repo "$REPO" --title "알림 장애: $WF_NAME 실패 + 슬랙 전송 불가 ($NOW)" \
+            --body "$(printf '워크플로 `%s` 가 `%s` 로 끝났고 슬랙 #rapa-에러 전송도 실패했다(토큰 만료·채널 변경 의심).\n\n- 실행 로그: %s\n- 조치: SLACK_BOT_TOKEN 시크릿과 채널 ID 점검 후 `gh workflow run workflow-fail-alert.yml -f simulate=failure` 로 도착 확인' "$WF_NAME" "$CONCLUSION" "$WF_URL")"
+          exit 1
