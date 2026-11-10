@@ -1,0 +1,13 @@
+{
+  "deniedMcpServers": [
+    {
+      "serverName": "claude.ai Vercel"
+    },
+    {
+      "serverName": "claude.ai Supabase"
+    },
+    {
+      "serverName": "claude.ai Claude Docs"
+    }
+  ]
+}
