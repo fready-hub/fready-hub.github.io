@@ -10,20 +10,25 @@ on:
       simulate:
         description: "down 을 넣으면 장애 알림을 시험 전송"
         default: ""
+permissions:
+  contents: read
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - name: 점검
         id: check
+        continue-on-error: true
+        shell: bash
         env:
           SIM: ${{ inputs.simulate }}
         run: |
           if [ "$SIM" = down ]; then echo "(시험 전송) 장애 시뮬레이션" > result.txt; exit 1; fi
           bash .github/scripts/check-site.sh rapa.world | tee result.txt
       - name: 문제면 슬랙으로
-        if: failure() && steps.check.outcome == 'failure'
+        if: steps.check.outcome == 'failure'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           CHANNEL: C0C7X9G9L04
