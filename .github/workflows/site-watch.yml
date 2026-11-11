@@ -1,0 +1,41 @@
+# rapa.world 가용성·인증서 만료 감시 — 문제가 있으면 슬랙 #rapa-에러 로 보낸다.
+# 6시간마다 .github/scripts/check-site.sh 를 돌린다(HTTP 200, 인증서 잔여 14일 이상).
+# workflow_dispatch 의 simulate=down 은 알림 경로만 시험한다(실제 사이트는 건드리지 않는다).
+name: site-watch
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      simulate:
+        description: "down 을 넣으면 장애 알림을 시험 전송"
+        default: ""
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: 점검
+        id: check
+        continue-on-error: true
+        shell: bash
+        env:
+          SIM: ${{ inputs.simulate }}
+        run: |
+          if [ "$SIM" = down ]; then echo "(시험 전송) 장애 시뮬레이션" > result.txt; exit 1; fi
+          bash .github/scripts/check-site.sh rapa.world | tee result.txt
+      - name: 문제면 슬랙으로
+        if: steps.check.outcome == 'failure'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          CHANNEL: C0C7X9G9L04
+          REPO: ${{ github.repository }}
+        run: |
+          TEXT=$(printf '🚨 *[rapa] rapa.world 사이트 점검 실패*\n• 무엇: %s\n• 어디서: <https://rapa.world/|rapa.world> · <https://github.com/%s/settings/pages|Pages 설정>\n• 지금 할 일: 브라우저로 열어 확인, 인증서면 Pages 설정에서 HTTPS 강제를 껐다 켜기\n_%s · <https://github.com/%s/actions|Actions>_' \
+            "$(cat result.txt)" "$REPO" "$(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST')" "$REPO")
+          RES=$(curl -s -H "Authorization: Bearer $SLACK_BOT_TOKEN" -H 'Content-Type: application/json; charset=utf-8' \
+            -d "$(jq -n --arg c "$CHANNEL" --arg t "$TEXT" '{channel:$c,text:$t}')" https://slack.com/api/chat.postMessage)
+          echo "$RES" | jq -e .ok >/dev/null || { echo "슬랙 전송 실패: $RES"; exit 1; }
