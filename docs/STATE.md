@@ -12,7 +12,7 @@
 - 없음(미확인).
 
 ## 다음 할 일 (원장은 GitHub Issues — `gh api "repos/fready-hub/fready-hub.github.io/issues?state=open"`)
-- #10 알림 구멍: 사이트 다운·인증서 만료 감시가 없다
+- #10 사이트 감시 `site-watch.yml` 병합 후 `simulate=down` 으로 슬랙 도착 확인
 - #9 알림 구멍: Actions 워크플로 자체 실패가 슬랙으로 가지 않는다
 
 ## 사람이 할 일

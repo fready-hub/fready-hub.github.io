@@ -6,7 +6,7 @@
 name: workflow-fail-alert
 on:
   workflow_run:
-    workflows: [pages-alert]
+    workflows: [pages-alert, site-watch]
     types: [completed]
   workflow_dispatch:
     inputs:
