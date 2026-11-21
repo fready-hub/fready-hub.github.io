@@ -13,7 +13,7 @@
 
 ## 다음 할 일 (원장은 GitHub Issues — `gh api "repos/fready-hub/fready-hub.github.io/issues?state=open"`)
 - #10 사이트 감시 `site-watch.yml` 병합 후 `simulate=down` 으로 슬랙 도착 확인
-- #9 알림 구멍: Actions 워크플로 자체 실패가 슬랙으로 가지 않는다
+- #9 알림 구멍: `workflow-fail-alert` 시험 발송 도착 확인(2026-11-22) — 실제 실패 연쇄 발화만 미시험
 
 ## 사람이 할 일
 - 카톡 미리보기를 바꿨다면 카카오 디버거에서 `https://rapa.world/` 캐시 초기화(사용자 로그인 필요).
